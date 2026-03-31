@@ -1,0 +1,586 @@
+/* --- ШРИФТЫ И БАЗОВЫЕ НАСТРОЙКИ --- */
+@font-face {
+  font-family: 'Beeline Sans';
+  src: local('Beeline Sans'), local('BeelineSans'), local('Beeline-Sans');
+}
+
+:root {
+  --bg-body: #000000;
+  --bg-board: #0d0d0d;
+  --bg-header: #111111;
+  --bg-modal: #1a1a1a;
+  --border: #333333;
+  --text-main: #ffffff;
+  --text-sec: #aaaaaa;
+  --text-muted: #666666;
+  --bee-yellow: #FFCC00;
+  --bee-yellow-dim: rgba(255, 204, 0, 0.15);
+  --bee-red: #E31E24;
+  --bee-red-dim: rgba(227, 30, 36, 0.1);
+  --transition: all 0.3s ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Beeline Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-size: 13px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- HEADER --- */
+header {
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  height: 50px;
+  position: relative;
+}
+
+header h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 5px;
+}
+
+header h1 .header-icon {
+  color: var(--bee-yellow);
+  font-size: 14px;
+}
+
+.header-info {
+  font-size: 11px;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bee-logo-text {
+  color: var(--bee-yellow);
+  font-weight: bold;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+/* --- TOOLBAR & STATS --- */
+.toolbar {
+  padding: 0 20px;
+  background-color: var(--bg-body);
+  display: flex;
+  justify-content: flex-end; /* Выравнивание по правому краю */
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  height: 40px;
+  flex-shrink: 0;
+  gap: 15px; /* Отступ между элементами */
+}
+
+/* Стиль для статистики в тулбаре */
+.stats-indicator {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+  margin-right: 10px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.3s;
+}
+
+.stat-item i {
+  font-size: 12px;
+}
+
+.btn-add, .btn-export {
+  padding: 6px 16px;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition);
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-add {
+  background-color: var(--bee-yellow);
+  color: #000;
+}
+.btn-add:hover { background-color: #e6b800; }
+
+.btn-export {
+  background-color: #333;
+  color: #fff;
+}
+.btn-export:hover { background-color: #555; }
+
+/* --- BOARD WRAPPER --- */
+body > .board-wrapper {
+  padding: 0;
+  gap: 0;
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 90px);
+  width: 100%;
+}
+
+/* --- SECTIONS --- */
+.board-section {
+  width: 100%;
+  max-width: none;
+  background-color: var(--bg-board);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 8px 15px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-header);
+  flex-shrink: 0;
+  height: 35px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.header-accent {
+  border-left: 3px solid var(--bee-yellow);
+  padding-left: 8px;
+}
+
+.section-title i {
+  color: var(--bee-yellow);
+  font-size: 10px;
+}
+
+.count-badge {
+  font-size: 10px;
+  color: var(--text-sec);
+  background: #222;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* --- EXCEL GRID (ТАБЛИЦЫ) --- */
+.excel-grid {
+  flex-grow: 1;
+  overflow: auto;
+  background-color: var(--bg-body);
+  position: relative;
+}
+
+/* Скроллбар для красоты */
+.excel-grid::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.excel-grid::-webkit-scrollbar-track {
+  background: var(--bg-body);
+}
+.excel-grid::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+.excel-grid::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Фиксированная ширина колонок */
+}
+
+.excel-table th {
+  text-align: left;
+  padding: 6px 15px;
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-sec);
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  background-color: var(--bg-header);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.excel-table th:last-child { border-right: none; }
+
+.excel-table td {
+  padding: 6px 15px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  color: var(--text-main);
+  vertical-align: middle;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.excel-table tr:last-child td { border-bottom: none; }
+.excel-table tr:last-child td:last-child { border-right: none; }
+
+.excel-table tr:hover td { 
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background 0.1s;
+}
+
+.cell-title { font-weight: 600; color: var(--text-main); }
+.cell-meta { color: var(--text-sec); }
+
+/* --- ФОРМА (MODAL) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85); /* Чуть прозрачнее */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px); /* Эффект размытия фона */
+}
+
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+.modal {
+  background: var(--bg-modal);
+  width: 450px;
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--bee-yellow);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal { transform: translateY(0); }
+
+.modal h2 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group { margin-bottom: 12px; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+
+label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  background: #000;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 12px;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--bee-yellow);
+  background: #0a0a0a;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-sec);
+  padding: 6px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: var(--transition);
+}
+.btn-cancel:hover { border-color: var(--text-main); color: var(--text-main); }
+
+.btn-submit {
+  background: var(--bee-yellow);
+  border: none;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+}
+.btn-submit:hover { background: #e6b800; }
+
+/* --- ВЫПАДАЮЩИЕ СПИСКИ СТАТУСОВ --- */
+.status-select {
+  width: 100%;
+  padding: 4px 6px;
+  background: #111111;
+  border: 1px solid #444;
+  color: #ffffff;
+  border-radius: 2px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: var(--bee-yellow);
+  background-color: #1a1a1a;
+}
+
+.status-active {
+  color: var(--bee-yellow);
+  background-color: var(--bee-yellow-dim);
+  border-color: var(--bee-yellow);
+  font-weight: bold;
+}
+
+.status-done {
+  color: var(--text-muted);
+  background-color: #111111;
+  border-color: #333;
+  text-decoration: line-through;
+}
+
+.status-backlog {
+  color: #aaa;
+  background-color: #111111;
+  border-color: #333;
+}
+
+/* --- НОМЕРА --- */
+th:nth-child(1) { text-align: center; width: 50px; }
+td:nth-child(1) { text-align: center; color: #555555; font-weight: 600; width: 50px; }
+
+/* --- АРХИВ --- */
+.archive-section {
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-body);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.archive-header {
+  padding: 10px 15px;
+  background-color: var(--bg-header);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  color: var(--text-sec);
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.archive-header:hover { background-color: #222; }
+
+.archive-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.archive-title i { font-size: 11px; }
+
+.archive-toggle {
+  font-size: 10px;
+  transition: transform 0.3s;
+}
+
+.archive-section.open .archive-toggle {
+  transform: rotate(180deg);
+}
+
+.archive-content {
+  display: none;
+  padding: 0;
+  max-height: 300px; /* Ограничение высоты архива */
+  overflow-y: auto;
+}
+
+.archive-section.open .archive-content {
+  display: block;
+}
+
+.archive-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+  padding: 8px 15px;
+  border-bottom: 1px solid #222;
+  color: #666;
+  font-size: 11px;
+}
+
+.archive-row:hover {
+  background-color: rgba(255,255,255,0.02);
+}
+
+.archive-row:last-child { border-bottom: none; }
+
+.archive-row .cell-title {
+  font-weight: normal;
+  font-style: italic;
+  color: #888;
+}
+
+/* --- INLINE РЕДАКТИРОВАНИЕ --- */
+.editing-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 12px;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid var(--bee-yellow);
+  border-radius: 2px;
+  font-family: inherit;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+}
+
+.editing-input:focus {
+  border-color: var(--bee-yellow);
+  box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.3);
+}
+
+input[type="date"].editing-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* --- ПРОСРОЧЕННЫЕ ЗАДАЧИ --- */
+.cell-meta.overdue {
+  color: var(--bee-red) !important;
+  font-weight: bold;
+  text-decoration: underline;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* --- КАЛЕНДАРЬ --- */
+input[type="date"] {
+  color: var(--text-main);
+  background-color: #111111;
+  border: 1px solid var(--border);
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+input[type="date"]:hover { border-color: #555; }
+
+/* --- АДАПТИВНОСТЬ (необязательно, но полезно) --- */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .stats-indicator {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    justify-content: space-around;
+  }
+  
+  .header-info {
+    font-size: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .modal {
+    width: 90%;
+  }
+}
