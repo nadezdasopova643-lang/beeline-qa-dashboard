@@ -4,76 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Доска задач | Билайн</title>
-    <style>
-    /* БАЗОВЫЕ СТИЛИ ДЛЯ BEELINE DASHBOARD */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-      font-size: 14px;
-    }
-    header {
-      background: #111;
-      padding: 10px 20px;
-      border-bottom: 1px solid #333;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    h1 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
-    .bee-logo-text { color: #FFCC00; font-weight: bold; font-size: 16px; }
-    .toolbar { padding: 10px 20px; background: #000; border-bottom: 1px solid #333; display: flex; gap: 10px; }
-    .btn-add { background: #FFCC00; color: #000; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; border-radius: 2px; }
-    .btn-export { background: #333; color: #fff; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; border-radius: 2px; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-overlay.active { display: flex; }
-    .modal { background: #1a1a1a; padding: 20px; border-radius: 4px; border: 1px solid #FFCC00; width: 400px; }
-    .form-group { margin-bottom: 10px; }
-    label { display: block; color: #aaa; font-size: 12px; margin-bottom: 5px; }
-    input, select { width: 100%; padding: 8px; background: #000; border: 1px solid #333; color: #fff; border-radius: 2px; }
-    .modal-actions { margin-top: 20px; text-align: right; }
-    .btn-cancel { background: transparent; border: 1px solid #333; color: #aaa; padding: 5px 10px; cursor: pointer; }
-    .btn-submit { background: #FFCC00; border: none; color: #000; padding: 5px 15px; font-weight: bold; cursor: pointer; }
-    .board-wrapper { display: flex; flex-direction: column; height: calc(100vh - 120px); }
-    .board-section { flex: 1; background: #0d0d0d; border-bottom: 1px solid #333; overflow-y: auto; margin-bottom: 10px; }
-    .section-header { background: #111; padding: 8px 15px; font-weight: bold; color: #fff; border-bottom: 1px solid #333; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
-    .excel-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .excel-table th { text-align: left; padding: 8px; background: #111; color: #aaa; border-bottom: 1px solid #333; border-right: 1px solid #333; position: sticky; top: 0; }
-    .excel-table td { padding: 8px; border-bottom: 1px solid #333; border-right: 1px solid #333; }
-    .cell-title { font-weight: bold; }
-    .status-select { width: 100%; background: #111; border: 1px solid #444; color: #fff; padding: 4px; }
-    .archive-section { padding: 10px; background: #000; border-top: 1px solid #333; }
-  </style>
+  <!-- ИСПРАВЛЕННАЯ СТРОКА -->
+  <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <!-- ПОДКЛЮЧЕНИЕ FIREBASE (СТРОГО ЭТОТА ВЕРСИЯ) -->
+  <!-- ПОДКЛЮЧЕНИЕ FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
-  <!-- ТВОЙ СКРИПТ (СЮДА НУЖНО ВСТАВИТЬ КОД НИЖЕ) -->
   <script src="js/script.js"></script>
 </head>
 <body>
-  <!-- ТЕЛО СТРАНИЦЫ ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ (если у тебя уже есть HTML) -->
-  <!-- Если у тебя нет HTML, вот структура (замени всё содержимое body) -->
   <header>
     <h1>
-      <div class="header-icon"><i class="fa-solid fa-bullseye"></i></div>
+      <div class="header-icon">
+        <i class="fa-solid fa-bullseye"></i>
+      </div>
       Доска задач | Контроль качества
     </h1>
-    <div class="header-info">Frankfurt am Main | <span class="bee-logo-text">BEELINE AI</span></div>
+    <div class="header-info">
+      Frankfurt am Main | <span class="bee-logo-text">BEELINE AI</span>
+    </div>
   </header>
+  
   <div class="toolbar">
     <div class="stats-indicator" id="statsDisplay">
       <span class="stat-item"><i class="fa-solid fa-circle-exclamation" style="color: #E31E24;"></i> <span id="count-overdue">0</span></span>
       <span class="stat-item"><i class="fa-solid fa-spinner" style="color: #FFCC00;"></i> <span id="count-active">0</span></span>
     </div>
-    <button type="button" id="toggleFormBtn" class="btn-add"><i class="fa-solid fa-plus"></i> Добавить задачу</button>
-    <button type="button" id="exportBtn" class="btn-export"><i class="fa-solid fa-file-excel"></i> Скачать Excel</button>
+    <button type="button" id="toggleFormBtn" class="btn-add">
+      <i class="fa-solid fa-plus"></i> Добавить задачу
+    </button>
+    <button type="button" id="exportBtn" class="btn-export">
+      <i class="fa-solid fa-file-excel"></i> Скачать Excel
+    </button>
   </div>
+
   <div id="taskFormContainer" class="modal-overlay">
     <div class="modal">
       <h2><i class="fa-solid fa-pen-to-square"></i> Новая задача</h2>
@@ -91,20 +58,29 @@
             <label for="assignee">Ответственный</label>
             <input type="text" id="assignee" list="assignee-list" placeholder="Имя..." required />
             <datalist id="assignee-list">
-              <option value="Сизухина Дарья"><option value="Семенова Дарья"><option value="Котяхова Анастасия"><option value="Батина Анастасия"><option value="Чернова Антонина"><option value="Сопова Надежда"><option value="Вы (Руководитель)">
+              <option value="Сизухина Дарья">
+              <option value="Семенова Дарья">
+              <option value="Котяхова Анастасия">
+              <option value="Батина Анастасия">
+              <option value="Чернова Антонина">
+              <option value="Сопова Надежда">
+              <option value="Вы (Руководитель)">
             </datalist>
           </div>
         </div>
+        
         <div class="form-group">
           <label for="taskTitle">Название задачи</label>
           <input type="text" id="taskTitle" placeholder="Введите название задачи..." required />
         </div>
+        
         <div class="form-row">
           <div class="form-group">
             <label for="dueDate">Срок выполнения</label>
             <input type="date" id="dueDate" required />
           </div>
         </div>
+        
         <div class="modal-actions">
           <button type="button" id="cancelFormBtn" class="btn-cancel">Отмена</button>
           <button type="submit" class="btn-submit">Сохранить</button>
@@ -112,21 +88,76 @@
       </form>
     </div>
   </div>
+
   <div class="board-wrapper">
     <div class="board-section" id="section-operations">
-      <div class="section-header"><div class="section-title header-accent"><i class="fa-solid fa-screwdriver-wrench"></i> Операционные</div><span class="count-badge" id="count-operations">0</span></div>
-      <div class="excel-grid"><table class="excel-table"><thead><tr><th width="5%">№</th><th width="40%">Название задачи</th><th width="20%">Срок</th><th width="20%">Ответственный</th><th width="15%">Статус</th></tr></thead><tbody id="body-operations"></tbody></table></div>
+      <div class="section-header">
+        <div class="section-title header-accent"><i class="fa-solid fa-screwdriver-wrench"></i> Операционные</div>
+        <span class="count-badge" id="count-operations">0</span>
+      </div>
+      <div class="excel-grid">
+        <table class="excel-table">
+          <thead>
+            <tr>
+              <th width="5%">№</th>
+              <th width="40%">Название задачи</th>
+              <th width="20%">Срок</th>
+              <th width="20%">Ответственный</th>
+              <th width="15%">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="body-operations"></tbody>
+        </table>
+      </div>
     </div>
+
     <div class="board-section" id="section-projects">
-      <div class="section-header"><div class="section-title header-accent"><i class="fa-solid fa-project-diagram"></i> Проектные</div><span class="count-badge" id="count-projects">0</span></div>
-      <div class="excel-grid"><table class="excel-table"><thead><tr><th width="5%">№</th><th width="40%">Название задачи</th><th width="20%">Срок</th><th width="20%">Ответственный</th><th width="15%">Статус</th></tr></thead><tbody id="body-projects"></tbody></table></div>
+      <div class="section-header">
+        <div class="section-title header-accent"><i class="fa-solid fa-project-diagram"></i> Проектные</div>
+        <span class="count-badge" id="count-projects">0</span>
+      </div>
+      <div class="excel-grid">
+        <table class="excel-table">
+          <thead>
+            <tr>
+              <th width="5%">№</th>
+              <th width="40%">Название задачи</th>
+              <th width="20%">Срок</th>
+              <th width="20%">Ответственный</th>
+              <th width="15%">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="body-projects"></tbody>
+        </table>
+      </div>
     </div>
+
     <div class="board-section" id="section-longterm">
-      <div class="section-header"><div class="section-title header-accent"><i class="fa-solid fa-calendar-check"></i> Долгосрочные</div><span class="count-badge" id="count-longterm">0</span></div>
-      <div class="excel-grid"><table class="excel-table"><thead><tr><th width="5%">№</th><th width="40%">Название задачи</th><th width="20%">Срок</th><th width="20%">Ответственный</th><th width="15%">Статус</th></tr></thead><tbody id="body-longterm"></tbody></table></div>
+      <div class="section-header">
+        <div class="section-title header-accent"><i class="fa-solid fa-calendar-check"></i> Долгосрочные</div>
+        <span class="count-badge" id="count-longterm">0</span>
+      </div>
+      <div class="excel-grid">
+        <table class="excel-table">
+          <thead>
+            <tr>
+              <th width="5%">№</th>
+              <th width="40%">Название задачи</th>
+              <th width="20%">Срок</th>
+              <th width="20%">Ответственный</th>
+              <th width="15%">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="body-longterm"></tbody>
+        </table>
+      </div>
     </div>
+
     <div class="archive-section" id="archive-section">
-      <div class="archive-header" onclick="toggleArchive()"><div class="archive-title"><i class="fa-solid fa-box-archive"></i> Архив задач (Закрыто)</div><div class="archive-toggle" id="archiveToggleIcon">▼</div></div>
+      <div class="archive-header" onclick="toggleArchive()">
+        <div class="archive-title"><i class="fa-solid fa-box-archive"></i> Архив задач (Закрыто)</div>
+        <div class="archive-toggle" id="archiveToggleIcon">▼</div>
+      </div>
       <div class="archive-content" id="archive-content"></div>
     </div>
   </div>
