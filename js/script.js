@@ -1,30 +1,25 @@
-// =============== ИНИЦИАЛИЗАЦИЯ FIREBASE ===============
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+// ✅ НЕТ import! Работаем с глобальным firebase (уже загружен в index.html)
 
-// 🔥 Берём твои ключи — они уже правильные
-const firebaseConfig = {
-  apiKey: "AIzaSyBi6uJHDsnWjBtcXZdMzsPYCNvK960j5W0",
-  authDomain: "beeline-qa-dashboard.firebaseapp.com",
-  projectId: "beeline-qa-dashboard",
-  storageBucket: "beeline-qa-dashboard.firebasestorage.app",
-  messagingSenderId: "694569146308",
-  appId: "1:694569146308:web:cdc5e13514c4adfddab691"
-};
+// -> Убедись, что в index.html выше есть:
+//    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+//    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+//    <script> firebase.initializeApp(config) </script>
 
-// Запускаем Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase();
-const tasksRef = ref(db, 'tasks');  // данные хранятся в /tasks
+// 🔥 Ссылка на базу данных (уже инициализирована в index.html)
+// Если в index.html уже есть: const db = firebase.database();
+// Тогда здесь просто используем db
+
+const tasksRef = firebase.database().ref('tasks');  // Храним задачи в /tasks
 
 // =============== ЗАГРУЗКА ЗАДАЧ ПРИ УСТАНОВКЕ ===============
 window.addEventListener('DOMContentLoaded', () => {
+  console.log('✅ Страница загружена, загружаем задачи из Firebase');
   loadTasksFromFirebase();
 });
 
 // =============== ФУНКЦИЯ: ЗАГРУЗИТЬ ВСЕ ЗАДАЧИ ИЗ FIREBASE ===============
 function loadTasksFromFirebase() {
-  onValue(tasksRef, (snapshot) => {
+  tasksRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (!data) {
       console.log('Нет задач в базе');
@@ -72,7 +67,7 @@ function loadTasksFromFirebase() {
 
 // =============== ФУНКЦИЯ: СОХРАНИТЬ ЗАДАЧУ В FIREBASE ===============
 function saveTaskToFirebase(task) {
-  push(tasksRef, task)
+  tasksRef.push(task)
     .then(() => {
       console.log('✅ Задача сохранена в Firebase');
       updateStats();
@@ -83,7 +78,8 @@ function saveTaskToFirebase(task) {
     });
 }
 
-// =============== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (как у тебя, но короче) ===============
+// =============== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===============
+
 function formatDateForDisplay(dateStr) {
   if (!dateStr) return '';
   const date = new Date(dateStr);
@@ -141,5 +137,73 @@ function updateStats() {
   if (activeBadge) activeBadge.innerText = active;
 }
 
-// =============== СТАНДАРТНЫЙ ОБРАБОТЧИК ФОРМЫ (ИНТЕГРИРОВАН В index.html) ===============
-// Убедись, что в index.html у формы есть: onsubmit="addTask(event)"
+// =============== ГЛОБАЛЬНЫЕ ФУНКЦИИ (доступны из HTML) ===============
+
+// Функция: добавить задачу
+window.addTask = function(e) {
+  e.preventDefault();
+  console.log('✅ Форма отправлена');
+
+  const type = document.getElementById('taskType').value;
+  const title = document.getElementById('taskTitle').value;
+  const assignee = document.getElementById('assignee').value || 'Не назначен';
+  const date = document.getElementById('dueDate').value;
+  const number = getNextNumber(type);
+
+  let sectionName = '';
+  let targetTbody = null;
+
+  if (type === 'operations') {
+    sectionName = 'Операционные';
+    targetTbody = document.getElementById('body-operations');
+  } else if (type === 'projects') {
+    sectionName = 'Проектные';
+    targetTbody = document.getElementById('body-projects');
+  } else if (type === 'long-term') {
+    sectionName = 'Долгосрочные';
+    targetTbody = document.getElementById('body-longterm');
+  }
+
+  if (targetTbody && title) {
+    const task = {
+      number,
+      title,
+      section: sectionName,
+      dateAttr: date,
+      assignee,
+      status: 'new',
+      statusClass: 'status-active'
+    };
+
+    // Сохраняем в Firebase
+    saveTaskToFirebase(task);
+
+    // Закрываем форму
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskFormContainer').classList.remove('active');
+  } else {
+    alert('Не удалось определить секцию');
+  }
+};
+
+// Функция: переключить архив
+window.toggleArchive = function() {
+  const archive = document.getElementById('archive-section');
+  if (archive) archive.classList.toggle('open');
+
+  const toggleIcon = document.getElementById('archiveToggleIcon');
+  if (toggleIcon) {
+    toggleIcon.style.transform = archive?.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+};
+
+// Вспомогательные функции
+function getNextNumber(type) {
+  const idMap = {
+    'operations': 'body-operations',
+    'projects': 'body-projects',
+    'long-term': 'body-longterm'
+  };
+  const tbody = document.getElementById(idMap[type]);
+  return tbody ? tbody.querySelectorAll('tr').length + 1 : 1;
+}

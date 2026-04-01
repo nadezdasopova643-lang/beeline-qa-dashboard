@@ -1,227 +1,39 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Доска задач | Билайн</title>
-  <!-- ИСПРАВЛЕННАЯ СТРОКА -->
+  
+  <!-- Стили -->
   <link rel="stylesheet" href="css/style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- Иконки -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <!-- ПОДКЛЮЧЕНИЕ FIREBASE -->
+  <!-- Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- 🔥 ПОДКЛЮЧЕНИЕ FIREBASE (сначала идёт Firebase) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
-  <script src="js/script.js"></script>
+  <!-- Конфигурация Firebase -->
   <script>
-    // Глобальная функция для формы
-    function addTask(e) {
-      e.preventDefault();
+    const firebaseConfig = {
+      apiKey: "AIzaSyBi6uJHDsnWjBtcXZdMzsPYCNvK960j5W0",
+      authDomain: "beeline-qa-dashboard.firebaseapp.com",
+      projectId: "beeline-qa-dashboard",
+      storageBucket: "beeline-qa-dashboard.firebasestorage.app",
+      messagingSenderId: "694569146308",
+      appId: "1:694569146308:web:cdc5e13514c4adfddab691"
+    };
     
-      const type = document.getElementById('taskType').value;
-      const title = document.getElementById('taskTitle').value;
-      const assignee = document.getElementById('assignee').value || 'Не назначен';
-      const date = document.getElementById('dueDate').value;
-      const number = getNextNumber(type);
-    
-      let sectionName = '';
-      let targetTbody = null;
-    
-      if (type === 'operations') {
-        sectionName = 'Операционные';
-        targetTbody = document.getElementById('body-operations');
-      } else if (type === 'projects') {
-        sectionName = 'Проектные';
-        targetTbody = document.getElementById('body-projects');
-      } else if (type === 'long-term') {
-        sectionName = 'Долгосрочные';
-        targetTbody = document.getElementById('body-longterm');
-      }
-    
-      const task = {
-        number,
-        title,
-        section: sectionName,
-        dateAttr: date,
-        assignee,
-        status: 'new',
-        statusClass: ''
-      };
-    
-      // Сохранение в Firebase
-      saveTaskToFirebase(task);
-    
-      // Очистка и закрытие формы
-      document.getElementById('taskForm').reset();
-      document.getElementById('taskFormContainer').classList.remove('active');
-    }
-    </script>
-</head>
-<body>
-  <header>
-    <h1>
-      <div class="header-icon">
-        <i class="fa-solid fa-bullseye"></i>
-      </div>
-      Доска задач | Контроль качества
-    </h1>
-    <div class="header-info">
-      Frankfurt am Main | <span class="bee-logo-text">BEELINE AI</span>
-    </div>
-  </header>
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
   
-  <div class="toolbar">
-    <div class="stats-indicator" id="statsDisplay">
-      <span class="stat-item"><i class="fa-solid fa-circle-exclamation" style="color: #E31E24;"></i> <span id="count-overdue">0</span></span>
-      <span class="stat-item"><i class="fa-solid fa-spinner" style="color: #FFCC00;"></i> <span id="count-active">0</span></span>
-    </div>
-    <button type="button" id="toggleFormBtn" class="btn-add">
-      <i class="fa-solid fa-plus"></i> Добавить задачу
-    </button>
-    <button type="button" id="exportBtn" class="btn-export">
-      <i class="fa-solid fa-file-excel"></i> Скачать Excel
-    </button>
-  </div>
-
-  <div id="taskFormContainer" class="modal-overlay">
-    <div class="modal">
-      <h2><i class="fa-solid fa-pen-to-square"></i> Новая задача</h2>
-      <form id="taskForm">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="taskType">Секция</label>
-            <select id="taskType" required>
-              <option value="operations">Операционные</option>
-              <option value="projects">Проектные</option>
-              <option value="long-term">Долгосрочные</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="assignee">Ответственный</label>
-            <input type="text" id="assignee" list="assignee-list" placeholder="Имя..." required />
-            <datalist id="assignee-list">
-              <option value="Сизухина Дарья">
-              <option value="Семенова Дарья">
-              <option value="Котяхова Анастасия">
-              <option value="Батина Анастасия">
-              <option value="Чернова Антонина">
-              <option value="Сопова Надежда">
-              <option value="Вы (Руководитель)">
-            </datalist>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="taskTitle">Название задачи</label>
-          <input type="text" id="taskTitle" placeholder="Введите название задачи..." required />
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="dueDate">Срок выполнения</label>
-            <input type="date" id="dueDate" required />
-          </div>
-        </div>
-        
-        <div class="modal-actions">
-          <button type="button" id="cancelFormBtn" class="btn-cancel">Отмена</button>
-          <button type="submit" class="btn-submit">Сохранить</button>
-        </div>
-        <form id="taskForm" onsubmit="addTask(event)">
-    </div>
-  </div>
-
-  <div class="board-wrapper">
-    <div class="board-section" id="section-operations">
-      <div class="section-header">
-        <div class="section-title header-accent"><i class="fa-solid fa-screwdriver-wrench"></i> Операционные</div>
-        <span class="count-badge" id="count-operations">0</span>
-      </div>
-      <div class="excel-grid">
-        <table class="excel-table">
-          <thead>
-            <tr>
-              <th width="5%">№</th>
-              <th width="40%">Название задачи</th>
-              <th width="20%">Срок</th>
-              <th width="20%">Ответственный</th>
-              <th width="15%">Статус</th>
-            </tr>
-          </thead>
-          <tbody id="body-operations"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="board-section" id="section-projects">
-      <div class="section-header">
-        <div class="section-title header-accent"><i class="fa-solid fa-project-diagram"></i> Проектные</div>
-        <span class="count-badge" id="count-projects">0</span>
-      </div>
-      <div class="excel-grid">
-        <table class="excel-table">
-          <thead>
-            <tr>
-              <th width="5%">№</th>
-              <th width="40%">Название задачи</th>
-              <th width="20%">Срок</th>
-              <th width="20%">Ответственный</th>
-              <th width="15%">Статус</th>
-            </tr>
-          </thead>
-          <tbody id="body-projects"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="board-section" id="section-longterm">
-      <div class="section-header">
-        <div class="section-title header-accent"><i class="fa-solid fa-calendar-check"></i> Долгосрочные</div>
-        <span class="count-badge" id="count-longterm">0</span>
-      </div>
-      <div class="excel-grid">
-        <table class="excel-table">
-          <thead>
-            <tr>
-              <th width="5%">№</th>
-              <th width="40%">Название задачи</th>
-              <th width="20%">Срок</th>
-              <th width="20%">Ответственный</th>
-              <th width="15%">Статус</th>
-            </tr>
-          </thead>
-          <tbody id="body-longterm"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="archive-section" id="archive-section">
-      <div class="archive-header" onclick="toggleArchive()">
-        <div class="archive-title"><i class="fa-solid fa-box-archive"></i> Архив задач (Закрыто)</div>
-        <div class="archive-toggle" id="archiveToggleIcon">▼</div>
-      </div>
-      <div class="archive-content" id="archive-content"></div>
-    </div>
-  </div>
-</body>
-=======
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Доска задач | Билайн</title>
-  <!-- ИСПРАВЛЕННАЯ СТРОКА -->
-  <link rel="stylesheet" href="css/style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
-  <!-- ПОДКЛЮЧЕНИЕ FIREBASE -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  
+  <!-- Твой скрипт (после Firebase) -->
   <script src="js/script.js"></script>
 </head>
 <body>
@@ -250,10 +62,11 @@
     </button>
   </div>
 
+  <!-- Модальное окно добавления задачи -->
   <div id="taskFormContainer" class="modal-overlay">
     <div class="modal">
       <h2><i class="fa-solid fa-pen-to-square"></i> Новая задача</h2>
-      <form id="taskForm">
+      <form id="taskForm" onsubmit="addTask(event)">
         <div class="form-row">
           <div class="form-group">
             <label for="taskType">Секция</label>
@@ -298,7 +111,10 @@
     </div>
   </div>
 
+  <!-- Основная доска -->
   <div class="board-wrapper">
+    
+    <!-- Секция: Операционные -->
     <div class="board-section" id="section-operations">
       <div class="section-header">
         <div class="section-title header-accent"><i class="fa-solid fa-screwdriver-wrench"></i> Операционные</div>
@@ -320,6 +136,7 @@
       </div>
     </div>
 
+    <!-- Секция: Проектные -->
     <div class="board-section" id="section-projects">
       <div class="section-header">
         <div class="section-title header-accent"><i class="fa-solid fa-project-diagram"></i> Проектные</div>
@@ -341,6 +158,7 @@
       </div>
     </div>
 
+    <!-- Секция: Долгосрочные -->
     <div class="board-section" id="section-longterm">
       <div class="section-header">
         <div class="section-title header-accent"><i class="fa-solid fa-calendar-check"></i> Долгосрочные</div>
@@ -362,6 +180,7 @@
       </div>
     </div>
 
+    <!-- Архив задач -->
     <div class="archive-section" id="archive-section">
       <div class="archive-header" onclick="toggleArchive()">
         <div class="archive-title"><i class="fa-solid fa-box-archive"></i> Архив задач (Закрыто)</div>
@@ -369,7 +188,8 @@
       </div>
       <div class="archive-content" id="archive-content"></div>
     </div>
+
   </div>
+
 </body>
->>>>>>> 3226d302e645ac82e41b173e38c0fe24ee500a20
 </html>
